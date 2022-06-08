@@ -6,7 +6,7 @@ class ConnectFour
   def initialize
     @game_board = Array.new(6) { Array.new(7, ' ') }
     @player_list = ['X', 'O']
-    query_player()
+    # query_player()
   end
 
   protected
@@ -99,6 +99,45 @@ class ConnectFour
         end
       end
     end
+    @game_board.each_with_index do |row, i|
+      if i > 3
+        continue
+      end
+      player = ''
+      row.each_with_index do |cell, j|
+        if cell == ' '
+          player = ''
+        elsif counter.zero?
+          player = cell
+          if row[i + 1][j + 1] == player and row[i + 2][j + 2] == player and row[i + 3][j + 3] == player
+            victory(player)
+            return 1
+          counter = 0
+          player = ''
+          end
+        end
+      end
+    end
+    reverse_board = @game_board.reverse
+    reverse_board.each_with_index do |row, i|
+      if i > 3
+        continue
+      end
+      player = ''
+      row.each_with_index do |cell, j|
+        if cell == ' '
+          player = ''
+        elsif counter.zero?
+          player = cell
+          if row[i + 1][j + 1] == player and row[i + 2][j + 2] == player and row[i + 3][j + 3] == player
+            victory(player)
+            return 1
+          counter = 0
+          player = ''
+          end
+        end
+      end
+    end
     return false
   end
 
@@ -126,4 +165,3 @@ class ConnectFour
     end
   end
 end
-ConnectFour.new

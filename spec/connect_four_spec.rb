@@ -32,24 +32,24 @@ describe 'ConnectFour' do
       result = @main.send(:check_victory)
       expect(result).to eql(1)
     end
-    xit 'successfully finds a forward diagonal victory' do
-      check_board = [
+    it 'successfully finds a forward diagonal victory' do
+      @main.instance_variable_set(:@game_board, [
         ['X', 0, 0, 0, 0, 0, 0],
         [0, 'X', 0, 0, 0, 0, 0],
         [0, 0, 'X', 0, 0, 0, 0],
         [0, 0, 0, 'X', 0, 0, 0]
-      ] + Array.new(3, Array.new(7, 0))
-      result = @main.check_victory
+      ] + Array.new(3, Array.new(7, 0)))
+      result = @main.send(:check_victory)
       expect(result).to eql(1)
     end
-    xit 'successfully finds a backward diagonal victory' do
-      check_board = [
+    it 'successfully finds a backward diagonal victory' do
+      @main.instance_variable_set(:@game_board, [
         [0, 0, 0, 'X', 0, 0, 0],
         [0, 0, 'X', 0, 0, 0, 0],
         [0, 'X', 0, 0, 0, 0, 0],
         ['X', 0, 0, 0, 0, 0, 0]
-      ] + Array.new(3, Array.new(7, 0))
-      result = @main.check_victory
+      ] + Array.new(3, Array.new(7, 0)))
+      result = @main.send(:check_victory)
       expect(result).to eql(1)
     end
   end
