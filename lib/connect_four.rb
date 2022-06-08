@@ -1,61 +1,74 @@
+# frozen_string_literal: true
+
 require 'pry-byebug'
 
+# Connect Four game
 class ConnectFour
   attr_reader :game_board, :player_list, :player
 
   def initialize
     @game_board = Array.new(6) { Array.new(7, ' ') }
-    @player_list = ['X', 'O']
-    # query_player()
+    @player_list = %w[X O]
+    query_player
   end
 
   protected
 
   def query_player
+    unless @game_board[5].include?(' ')
+      puts 'Tie!  Game over.'
+      exit(1)
+    end
     @player = @player_list[0]
     puts "\nPlayer #{@player}: Please choose a column from 1 to 7."
     begin
       answer = gets.chop.to_i - 1
     rescue StandardError
-      puts "Sorry.  You chose an invalid character!  Choose a number from 1 to 7. Try again."
-      query_player()
+      puts 'Sorry.  You chose an invalid character!  Choose a number from 1 to 7. Try again.'
+      query_player
     else
       check_column(answer)
     end
   end
 
   def check_column(answer)
-    # binding.pry
     begin
       raise unless answer.between?(0, 6)
     rescue StandardError
-      puts "Sorry.  You have to choose a column between 1 and 7!  Try again."
-      query_player()
+      puts 'Sorry.  You have to choose a column between 1 and 7!  Try again.'
+      query_player
     end
     check_row(answer)
   end
 
   def check_row(answer)
     @game_board.each_with_index do |row, index|
-      if row[answer] == ' '
-        place_tile(index, answer)
-        if check_victory()
-          exit(true)
-        end
-        @player_list[0], @player_list[1] = @player_list[1], @player_list[0]
-        query_player()
-      end
+      next unless row[answer] == ' '
+
+      place_tile(index, answer)
+      exit(true) if check_victory
+      @player_list[0], @player_list[1] = @player_list[1], @player_list[0]
+      query_player
     end
     puts "Sorry.  You have to choose a column that isn't full! Try again."
-    query_player()
+    query_player
   end
 
   def place_tile(row, column)
     @game_board[row][column] = @player
-    display_board()
+    display_board
   end
 
   def check_victory
+    return true if horizontal_victory
+    return true if vertical_victory
+    return true if forward_diagonal_victory
+    return true if backward_diagonal_victory
+
+    false
+  end
+
+  def horizontal_victory
     @game_board.each do |row|
       counter = 0
       player = ''
@@ -74,14 +87,18 @@ class ConnectFour
           end
         else
           player = cell
-          if player == ' '
-            counter = 0
-          else
-            counter = 1
-          end
+          counter = if player == ' '
+                      0
+                    else
+                      1
+                    end
         end
       end
     end
+    false
+  end
+
+  def vertical_victory
     columns = @game_board.transpose
     columns.each do |col|
       counter = 0
@@ -99,15 +116,22 @@ class ConnectFour
             return 1
           end
         else
-          player = ''
-          counter = 0
+          player = cell
+          counter = if player == ' '
+                      0
+                    else
+                      1
+                    end
         end
       end
     end
+    false
+  end
+
+  def forward_diagonal_victory
     @game_board.each_with_index do |row, i|
-      if i > 3
-        next
-      end
+      next if i >= 3
+
       player = ''
       counter = 0
       row.each_with_index do |cell, j|
@@ -116,22 +140,23 @@ class ConnectFour
           counter = 0
         elsif counter.zero?
           player = cell
-          if @game_board[i + 1][j + 1] == player and @game_board[i + 2][j + 2] == player and @game_board[i + 3][j + 3] == player
+          if (@game_board[i + 1][j + 1] == player) && (@game_board[i + 2][j + 2] == player) && (@game_board[i + 3][j + 3] == player)
             victory(player)
             return 1
-          counter = 0
-          player = ''
           end
         else
           counter = 0
         end
       end
     end
-    reverse_board = @game_board.map { |row| row.reverse }
+    false
+  end
+
+  def backward_diagonal_victory
+    reverse_board = @game_board.map(&:reverse)
     reverse_board.each_with_index do |row, i|
-      if i > 3
-        next
-      end
+      next if i >= 3
+
       player = ''
       counter = 0
       row.each_with_index do |cell, j|
@@ -140,29 +165,27 @@ class ConnectFour
           counter = 0
         elsif counter.zero?
           player = cell
-          if reverse_board[i + 1][j + 1] == player and reverse_board[i + 2][j + 2] == player and reverse_board[i + 3][j + 3] == player
+          if (reverse_board[i + 1][j + 1] == player) && (reverse_board[i + 2][j + 2] == player) && (reverse_board[i + 3][j + 3] == player)
             victory(player)
             return 1
-          counter = 0
-          player = ''
           end
         else
           counter = 0
         end
       end
     end
-    return false
+    false
   end
 
   def victory(player)
     puts "Victory! Player #{player} wins!"
-    return 1
+    1
   end
 
-  def display_board()
+  def display_board
     top_row = ''
     (1..7).each do |num|
-      top_row += '| ' + num.to_s + ' '
+      top_row += "| #{num} "
     end
     puts top_row += '|'
     puts '-' * 29
@@ -177,4 +200,4 @@ class ConnectFour
     end
   end
 end
-# ConnectFour.new
+ConnectFour.new

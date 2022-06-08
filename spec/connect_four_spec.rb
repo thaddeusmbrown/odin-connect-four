@@ -1,10 +1,12 @@
+# frozen_string_literal: true
+
 require './lib/connect_four'
 
 describe 'ConnectFour' do
   before(:each) do
     @main = ConnectFour.new
     @main.stub(:query_player)
-    STDOUT.stub(:write)
+    $stdout.stub(:write)
     @main.stub(:place_tile).with(an_instance_of(Integer), an_instance_of(Integer))
   end
   describe '#place_tile' do
@@ -23,7 +25,7 @@ describe 'ConnectFour' do
       @main = ConnectFour.new
     end
     it 'successfully finds a horizontal victory' do
-      @main.instance_variable_set(:@game_board, [[0, 'X', 'X', 'X', 'X', 0, 0]] + Array.new(5) { Array.new(7, 0) } )
+      @main.instance_variable_set(:@game_board, [[0, 'X', 'X', 'X', 'X', 0, 0]] + Array.new(5) { Array.new(7, 0) })
       result = @main.send(:check_victory)
       expect(result).to eql(1)
     end
