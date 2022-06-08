@@ -62,6 +62,7 @@ class ConnectFour
       row.each do |cell|
         if cell == ' '
           counter = 0
+          player = ''
         elsif counter.zero?
           counter = 1
           player = cell
@@ -72,8 +73,12 @@ class ConnectFour
             return 1
           end
         else
-          player = ''
-          counter = 0
+          player = cell
+          if player == ' '
+            counter = 0
+          else
+            counter = 1
+          end
         end
       end
     end
@@ -101,40 +106,48 @@ class ConnectFour
     end
     @game_board.each_with_index do |row, i|
       if i > 3
-        continue
+        next
       end
       player = ''
+      counter = 0
       row.each_with_index do |cell, j|
         if cell == ' '
           player = ''
+          counter = 0
         elsif counter.zero?
           player = cell
-          if row[i + 1][j + 1] == player and row[i + 2][j + 2] == player and row[i + 3][j + 3] == player
+          if @game_board[i + 1][j + 1] == player and @game_board[i + 2][j + 2] == player and @game_board[i + 3][j + 3] == player
             victory(player)
             return 1
           counter = 0
           player = ''
           end
+        else
+          counter = 0
         end
       end
     end
-    reverse_board = @game_board.reverse
+    reverse_board = @game_board.map { |row| row.reverse }
     reverse_board.each_with_index do |row, i|
       if i > 3
-        continue
+        next
       end
       player = ''
+      counter = 0
       row.each_with_index do |cell, j|
         if cell == ' '
           player = ''
+          counter = 0
         elsif counter.zero?
           player = cell
-          if row[i + 1][j + 1] == player and row[i + 2][j + 2] == player and row[i + 3][j + 3] == player
+          if reverse_board[i + 1][j + 1] == player and reverse_board[i + 2][j + 2] == player and reverse_board[i + 3][j + 3] == player
             victory(player)
             return 1
           counter = 0
           player = ''
           end
+        else
+          counter = 0
         end
       end
     end
@@ -144,7 +157,6 @@ class ConnectFour
   def victory(player)
     puts "Victory! Player #{player} wins!"
     return 1
-
   end
 
   def display_board()
@@ -165,3 +177,4 @@ class ConnectFour
     end
   end
 end
+# ConnectFour.new
